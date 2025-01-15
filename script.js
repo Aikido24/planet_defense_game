@@ -215,7 +215,8 @@ class Enemy {
       if (this.lives < 1 && this.game.spriteUpdate) this.frameX++;
       if (this.frameX > this.maxFrame) {
         this.reset();
-        if (!this.collided) this.game.score += this.maxLives;
+        if (!this.collided && !this.game.gameOver)
+          this.game.score += this.maxLives;
       }
     }
   }
@@ -232,6 +233,7 @@ class Asteroid extends Enemy {
     this.maxLives = this.lives;
   }
 }
+
 class Lobstermorph extends Enemy {
   constructor(game) {
     super(game);
@@ -243,6 +245,31 @@ class Lobstermorph extends Enemy {
     this.maxLives = this.lives;
   }
 }
+
+class Beetlemorph extends Enemy {
+  constructor(game) {
+    super(game);
+    this.image = document.getElementById("beetlemorph");
+    this.frameY = Math.floor(Math.random() * 4);
+    this.frameX = 0;
+    this.maxFrame = 3;
+    this.lives = 1;
+    this.maxLives = this.lives;
+  }
+}
+
+class Rhinomorph extends Enemy {
+  constructor(game) {
+    super(game);
+    this.image = document.getElementById("rhinomorph");
+    this.frameY = Math.floor(Math.random() * 4);
+    this.frameX = 0;
+    this.maxFrame = 6;
+    this.lives = 4;
+    this.maxLives = this.lives;
+  }
+}
+
 class Game {
   constructor(canvas) {
     this.canvas = canvas;
@@ -261,14 +288,14 @@ class Game {
     this.createEnemyPool();
     this.enemyPool[0].start();
     this.enemyTimer = 0;
-    this.enemyInterval = 1000;
+    this.enemyInterval = 800;
 
     this.spriteUpdate = false;
     this.spriteTimer = 0;
     this.spriteInterval = 150;
     this.score = 0;
-    this.winningScore = 10;
-    this.lives = 5;
+    this.winningScore = 50;
+    this.lives = 30;
 
     this.mouse = { x: 0, y: 0 };
     //event listeners
@@ -378,12 +405,15 @@ class Game {
   createEnemyPool() {
     for (let i = 0; i < this.numberOfEnemies; i++) {
       let randomNumber = Math.random();
-      if (randomNumber > 0.25) {
+      if (randomNumber < 0.25) {
         this.enemyPool.push(new Asteroid(this));
-      } else {
+      } else if (randomNumber < 0.5) {
         this.enemyPool.push(new Lobstermorph(this));
+      } else if (randomNumber < 0.75) {
+        this.enemyPool.push(new Rhinomorph(this));
+      } else {
+        this.enemyPool.push(new Beetlemorph(this));
       }
-      //
     }
   }
 
